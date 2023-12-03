@@ -2,10 +2,13 @@ import turtle
 import time
 import random
 import json
+import string
 
 from Character import *
 from Question import Text, generate_calculus_problem, exploding_sound, bgm
 
+pen = turtle.Turtle()
+pen.hideturtle()
 
 class Game:
     global A
@@ -37,14 +40,16 @@ class Game:
         
 
         self.enemies = []
+        self.letters = []
+        self.stupids = []
         
         self.boss_appeared = False
-        # self.wn.listen()
-        # self.wn.onkeypress(self.player.move_left, "Left")
-        # self.wn.onkeypress(self.player.move_right, "Right")
-        # self.wn.onkeypress(self.player.fire_bullet, "space")
+        self.type_boss = False
+        self.typefight = False
 
         self.game_running = False
+
+        self.factor = 0
     
         
     def create_enemy(self, n):
@@ -154,9 +159,7 @@ class Game:
         print("Game Continued")
         self.game_loop()
         
-    
-    
-        
+     
     def menu(self):
         self.mess.write("Press S to start the game", align="center", font=("Arial", 16, "normal"))
         bgm()
@@ -168,124 +171,20 @@ class Game:
         self.mess.clear()
         self.game_loop()
         turtle.onkeypress(None, "s")
+
+    def create_letter(self, n):
+        alph = list(string.ascii_lowercase)
+        for i in range(n):
+            char = random.choice(alph)
+            l = Letter(char)
+            alph.remove(char)
+            self.letters.append(l)
     
     def game_loop(self):
         try:
                 
             if self.game_running:
                 self.wn.update()
-
-                
-                if self.score > 0 and self.score % 100 == 0 and not self.boss_appeared:
-                    self.boss = Boss()
-                    self.velocity += 2
-                    self.number_of_enemies+= 3
-                    self.boss_appeared = True
-                    print(self.velocity)
-
-                # Boss logic
-                if self.boss_appeared:
-                    if len(self.boss.fire_bullets) == 0 or self.wn.frames % 400 == 0:
-                        self.boss.fire_player(self.player, 2)
-                    
-                    for bullet in self.player.bullets:
-                        if bullet.isvisible() and bullet.distance(self.boss) < 40:
-                            bullet.hideturtle()
-                            self.boss.reduce_hp()
-                            if bullet in self.player.bullets:
-                                self.player.bullets.remove(bullet)
-                            print("Boss HP:", self.boss.hp)
-                            self.boss_appeared = not self.boss.die()
-                            
-                    for fire in self.boss.fire_bullets:
-                        if fire.isvisible():
-                            y = fire.ycor()
-                            y -= 5  # Adjust enemy speed
-                            fire.sety(y)
-                        if fire.ycor() < -300:
-                            fire.hideturtle()
-                            fire.clear()
-                            if fire in self.boss.fire_bullets:
-                                self.boss.fire_bullets.remove(fire)
-                        if fire.distance(self.player) < 20:
-                            fire.hideturtle()
-                            fire.clear()
-                            if fire in self.boss.fire_bullets:
-                                self.boss.fire_bullets.remove(fire)
-                            print("Game Over - Enemy reached the player")
-                            pen = Text()
-                            pen.write("Game Over - Answer this question", align="center", font=("Arial", 16, "normal"))
-                            time.sleep(1)
-                            pen.clear()
-                            for e in self.enemies:
-                                e.hideturtle()
-                                e.clear()
-                            time.sleep(1)
-                            self.display_question(generate_calculus_problem(), self.wn)
-                            
-                    if self.boss.die():
-                        # self.boss.hideturtle()
-                        # self.boss.clear()
-                        self.score += 50
-                        self.score_display.clear()
-                        self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
-                        self.player.reward_bullet(10)
-                        for fire in self.boss.fire_bullets:
-                            fire.hideturtle()
-                            fire.clear()
-                        # time.sleep(1)
-                        # pen = Text()
-                        # pen.write("Game Over - Answer this question", align="center", font=("Arial", 16, "normal"))
-                        # time.sleep(1)
-                        # pen.clear()
-                        # self.display_question(generate_calculus_problem(), self.wn)
-
-                # Move enemies
-                for enemy in self.enemies:
-                    y = enemy.ycor()
-                    y -= self.velocity  # Adjust enemy speed
-                    x = enemy.xcor()
-                    x += random.randint(1,2)
-                    if x > 290:
-                        x = -290
-                    enemy.setx(x)
-                    enemy.sety(y)
-
-                    if self.player.is_attacked(enemy):
-                        print("Game Over - Enemy reached the player")
-                        pen = Text()
-                        pen.write("Game Over - Answer this question", align="center", font=("Arial", 16, "normal"))
-                        time.sleep(1)
-                        pen.clear()
-                        for e in self.enemies:
-                            e.hideturtle()
-                            e.clear()
-                        time.sleep(1)
-                        self.display_question(generate_calculus_problem(), self.wn)
-
-                    for bullet in self.player.bullets:
-                        if bullet.isvisible() and bullet.distance(enemy) < 20:
-                            # exploding_sound()
-                            bullet.hideturtle()
-                            enemy.disappear()
-                            
-                            if enemy in self.enemies:
-                                self.enemies.remove(enemy)
-                            if bullet in self.player.bullets:
-                                self.player.bullets.remove(bullet)
-                            self.player.reward_bullet(3)
-                            self.score += 10
-                            self.score_display.clear()
-                            self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
-                            print("Enemy Destroyed")
-                            
-                        if bullet.ycor() > 300:
-                            if bullet in self.player.bullets:
-                                self.player.bullets.remove(bullet)
-                    if y < -300:
-                        enemy.hideturtle()
-                        if enemy in self.enemies:
-                            self.enemies.remove(enemy)
 
                 # Move bullets
                 for bullet in self.player.bullets:
@@ -299,10 +198,175 @@ class Game:
                             bullet.hideturtle()
                             bullet.clear()
                             self.player.bullets.remove(bullet)
-                
-                # Create a new enemy every 5 seconds
-                if len(self.enemies) == 0 or self.wn.frames % 300 == 0:
-                    self.create_enemy(self.number_of_enemies)
+
+
+                if self.typefight:
+
+                    if self.type_boss == False:
+                        self.tboss = Boss()
+                        self.create_letter(10)
+                        pen.color('red')
+                        
+                        time.sleep(1)
+                        pen.write("TYPE OR DIE!!!!", align="center", font=("Bakery", 20, "normal"))
+                        
+                    
+                    self.type_boss = True
+                    for enemy in self.enemies:
+                        enemy.hideturtle()
+                    self.enemies.clear()
+
+                    if len(self.letters) == 0:
+                        self.tboss.hideturtle()
+                        self.letters.clear()
+                        self.player.reward_bullet(3)
+                        pen.clear()
+                        self.type_boss = False
+                        self.typefight = False
+
+                    for letter in self.letters:
+                        letter.increase_max(self.factor)
+                        if letter.alive:
+                            letter.clear()
+                            y = letter.ycor()
+                            y -= letter.speed
+                            letter.sety(y)
+                            letter.write(letter.string, align='center', 
+                                        font=('Arial', 20, 'bold'))
+                            
+                            if y < -300:
+                                pen.color("red")
+                                pen.write("GAME OVER", align='center', font=('Impact', 30, 'normal'))
+                                time.sleep(2)
+                                self.end_game()
+                        else:
+                            letter.clear()
+                            self.letters.remove(letter)
+
+                else:
+
+                     # Create a new enemy every 5 seconds
+                    if len(self.enemies) == 0 or self.wn.frames % 300 == 0:
+                        self.create_enemy(self.number_of_enemies)
+
+                    
+                    if self.score > 0 and self.score % 100 == 0 and not self.boss_appeared:
+                        self.boss = Boss()
+                        self.velocity += 2
+                        self.number_of_enemies+= 3
+                        self.boss_appeared = True
+                        print(self.velocity)
+
+                    # Boss logic
+                    if self.boss_appeared:
+                        if len(self.boss.fire_bullets) == 0 or self.wn.frames % 400 == 0:
+                            self.boss.fire_player(self.player, 2)
+                        
+                        for bullet in self.player.bullets:
+                            if bullet.isvisible() and bullet.distance(self.boss) < 40:
+                                bullet.hideturtle()
+                                self.boss.reduce_hp()
+                                if bullet in self.player.bullets:
+                                    self.player.bullets.remove(bullet)
+                                print("Boss HP:", self.boss.hp)
+                                self.boss_appeared = not self.boss.die()
+                                
+                        for fire in self.boss.fire_bullets:
+                            if fire.isvisible():
+                                y = fire.ycor()
+                                y -= 5  # Adjust enemy speed
+                                fire.sety(y)
+                            if fire.ycor() < -300:
+                                fire.hideturtle()
+                                fire.clear()
+                                if fire in self.boss.fire_bullets:
+                                    self.boss.fire_bullets.remove(fire)
+                            if fire.distance(self.player) < 20:
+                                fire.hideturtle()
+                                fire.clear()
+                                if fire in self.boss.fire_bullets:
+                                    self.boss.fire_bullets.remove(fire)
+                                
+                                self.typefight = True
+                                
+                        if self.boss.die():
+                            # self.boss.hideturtle()
+                            # self.boss.clear()
+                            self.score += 50
+                            self.score_display.clear()
+                            self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
+                            self.player.reward_bullet(10)
+                            for fire in self.boss.fire_bullets:
+                                fire.hideturtle()
+                                fire.clear()
+                            # time.sleep(1)
+                            # pen = Text()
+                            # pen.write("Game Over - Answer this question", align="center", font=("Arial", 16, "normal"))
+                            # time.sleep(1)
+                            # pen.clear()
+                            # self.display_question(generate_calculus_problem(), self.wn)
+
+                    
+                    # Move stupid
+
+                    if self.wn.frames % 100 == 0:
+                        s = Stupid('literallyme.gif')
+                        self.stupids.append(s)
+
+                    for stupid in self.stupids:
+                        y = stupid.ycor()
+                        y -= self.velocity
+                        x = stupid.xcor()
+                        x += random.randint(1,2)
+                        if x > 290:
+                            x = -290
+                        stupid.setx(x)
+                        stupid.sety(y)
+                        if y < -300:
+                            stupid.hideturtle()
+                            if stupid in self.stupids:
+                                self.stupids.remove(stupid)  
+                    
+                    
+                    # Move enemies
+                    for enemy in self.enemies:
+                        y = enemy.ycor()
+                        y -= self.velocity  # Adjust enemy speed
+                        x = enemy.xcor()
+                        x += random.randint(1,2)
+                        if x > 290:
+                            x = -290
+                        enemy.setx(x)
+                        enemy.sety(y)
+
+                        if self.player.is_attacked(enemy):
+                            self.typefight = True
+                            self.factor += 2
+
+                        for bullet in self.player.bullets:
+                            if bullet.isvisible() and bullet.distance(enemy) < 20:
+                                # exploding_sound()
+                                bullet.hideturtle()
+                                enemy.disappear()
+                                
+                                if enemy in self.enemies:
+                                    self.enemies.remove(enemy)
+                                if bullet in self.player.bullets:
+                                    self.player.bullets.remove(bullet)
+                                self.player.reward_bullet(3)
+                                self.score += 10
+                                self.score_display.clear()
+                                self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
+                                print("Enemy Destroyed")
+                                
+                            if bullet.ycor() > 300:
+                                if bullet in self.player.bullets:
+                                    self.player.bullets.remove(bullet)
+                        if y < -300:
+                            enemy.hideturtle()
+                            if enemy in self.enemies:
+                                self.enemies.remove(enemy)            
+               
 
                 # if self.wn.frames % 100 == 0:
                 #     boss.fire_enemy(self.player)
