@@ -2,6 +2,7 @@ import json
 import turtle
 import random
 import time
+import winsound
 
 class Text(turtle.Turtle):
     
@@ -23,3 +24,8 @@ def generate_calculus_problem():
     problem = random.choice(problems)
     return problem
 
+def exploding_sound():
+    winsound.PlaySound("sound/explode.wav", winsound.SND_ASYNC)
+
+def bgm():
+    winsound.PlaySound("sound/bgm.wav", winsound.SND_ASYNC)

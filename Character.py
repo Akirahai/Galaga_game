@@ -1,6 +1,9 @@
 import turtle
 import random
 import time
+import winsound
+
+
 
 turtle.addshape('char/spaceship.gif')
 
@@ -12,6 +15,7 @@ turtle.addshape('char/bullet.gif')
 
 turtle.addshape('char/fire.gif')
 
+turtle.addshape('char/explosion.gif')
 class Player(turtle.Turtle):
     def __init__(self):
         super().__init__()
@@ -45,7 +49,9 @@ class Player(turtle.Turtle):
         
         # Start continuous movement check
         self.move()
-
+    def shooting_sound(self):
+        winsound.PlaySound("sound/shooting.wav", winsound.SND_ASYNC)
+        
     def start_move_left(self):
         self.move_left = True
 
@@ -130,7 +136,12 @@ class Fire(turtle.Turtle):
         self.penup()
         self.hideturtle()
 
-
+class Explosion(turtle.Turtle):
+    def __init__(self):
+        super().__init__()
+        self.shape("char/explosion.gif")
+        self.penup()
+        self.hideturtle()
         
         
         
@@ -143,6 +154,13 @@ class Enemy(turtle.Turtle):
         self.penup()
         self.speed = 0.25
         self.goto(random.randint(-290, 290), 280)
+        self.explosion = Explosion()
+    
+    def disappear(self):
+        self.hideturtle()
+        self.explosion.goto(self.xcor(), self.ycor())
+        self.explosion.showturtle()
+        turtle.ontimer(lambda: self.explosion.hideturtle(), 500)
         
         
         

@@ -3,8 +3,8 @@ import time
 import random
 import json
 
-from Character import Player, Bullet, Enemy, Boss
-from Question import Text, generate_calculus_problem
+from Character import *
+from Question import Text, generate_calculus_problem, exploding_sound, bgm
 
 
 class Game:
@@ -13,7 +13,7 @@ class Game:
     def __init__(self):
         A = True
         self.wn = turtle.Screen()
-        self.wn.title("Galaga")
+        # self.wn.title("Galaga")
         self.wn.bgcolor("black")
         self.wn.setup(width=600, height=600)
         self.wn.tracer(0)
@@ -159,6 +159,7 @@ class Game:
         
     def menu(self):
         self.mess.write("Press S to start the game", align="center", font=("Arial", 16, "normal"))
+        bgm()
         turtle.onkeypress(self.start_game, "s")
     
     
@@ -185,10 +186,10 @@ class Game:
                 # Boss logic
                 if self.boss_appeared:
                     if len(self.boss.fire_bullets) == 0 or self.wn.frames % 400 == 0:
-                        self.boss.fire_player(self.player, 4)
+                        self.boss.fire_player(self.player, 2)
                     
                     for bullet in self.player.bullets:
-                        if bullet.isvisible() and bullet.distance(self.boss) < 20:
+                        if bullet.isvisible() and bullet.distance(self.boss) < 40:
                             bullet.hideturtle()
                             self.boss.reduce_hp()
                             if bullet in self.player.bullets:
@@ -199,7 +200,7 @@ class Game:
                     for fire in self.boss.fire_bullets:
                         if fire.isvisible():
                             y = fire.ycor()
-                            y -= 10  # Adjust enemy speed
+                            y -= 5  # Adjust enemy speed
                             fire.sety(y)
                         if fire.ycor() < -300:
                             fire.hideturtle()
@@ -229,6 +230,9 @@ class Game:
                         self.score_display.clear()
                         self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
                         self.player.reward_bullet(10)
+                        for fire in self.boss.fire_bullets:
+                            fire.hideturtle()
+                            fire.clear()
                         # time.sleep(1)
                         # pen = Text()
                         # pen.write("Game Over - Answer this question", align="center", font=("Arial", 16, "normal"))
@@ -261,8 +265,10 @@ class Game:
 
                     for bullet in self.player.bullets:
                         if bullet.isvisible() and bullet.distance(enemy) < 20:
+                            # exploding_sound()
                             bullet.hideturtle()
-                            enemy.hideturtle()
+                            enemy.disappear()
+                            
                             if enemy in self.enemies:
                                 self.enemies.remove(enemy)
                             if bullet in self.player.bullets:
@@ -319,19 +325,20 @@ class Game:
 
 A = False
 
-game = 0
-while True:
-    if A == False:
-        game = Game()
-        game.menu()
-        turtle.mainloop()
+# game = 0
+# while True:
+#     if A == False:
+#         game = Game()
+#         game.menu()
+#         turtle.mainloop()
     
+   
+game = Game()
+game.menu()
+turtle.mainloop()
 # game = Game()
 
 # game.menu()
-
-
-
 
 # # Listen for the keypress to start the game
 # turtle.listen()
