@@ -16,6 +16,8 @@ turtle.addshape('char/bullet.gif')
 turtle.addshape('char/fire.gif')
 
 turtle.addshape('char/explosion.gif')
+
+turtle.addshape('char/explosion1.gif')
 class Player(turtle.Turtle):
     def __init__(self):
         super().__init__()
@@ -143,6 +145,13 @@ class Explosion(turtle.Turtle):
         self.penup()
         self.hideturtle()
         
+class Explosion1(turtle.Turtle):
+    def __init__(self):
+        super().__init__()
+        self.shape("char/explosion1.gif")
+        self.penup()
+        self.hideturtle()
+        
         
         
         
@@ -173,6 +182,7 @@ class Boss(turtle.Turtle):
         self.hp = 100  # Set HP attribute for the boss
         
         self.fire_bullets = []
+        self.explosion = Explosion1()
     
 
     def fire_player(self, player, number):
@@ -189,6 +199,9 @@ class Boss(turtle.Turtle):
     def die(self):
         if self.hp <= 0:
             self.hideturtle()
+            self.explosion.goto(self.xcor(), self.ycor())
+            self.explosion.showturtle()
+            turtle.ontimer(lambda: self.explosion.hideturtle(), 500)
             self.clear()
             print("Boss defeated")
             return True
