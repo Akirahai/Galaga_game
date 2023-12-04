@@ -49,7 +49,8 @@ class Game:
 
         self.game_running = False
 
-        self.factor = 0
+        self.factor = 1
+        self.number_of_words = 10
     
         
     def create_enemy(self, n):
@@ -59,40 +60,40 @@ class Game:
         
         
         
-    def handle_choice(self, choice, answer, pen):
-        for i in range (4):
-            turtle.onkeypress(None, str(i + 1))
-        if choice == answer:
-            time.sleep(2)
-            pen.clear()
-            pen.write(f"Correct with your answer as {choice}. Game continue ", align="center", font=("Arial", 16, "normal"))
-            time.sleep(2)
-            pen.clear()
-            self.continue_game()
-        else:
-            time.sleep(2)
-            pen.clear()
-            pen.write(f"Wrong with your answer as {choice}. Game Over", align="center", font=("Arial", 16, "normal"))
-            time.sleep(2)
-            pen.clear()
-            self.end_game()
+    # def handle_choice(self, choice, answer, pen):
+    #     for i in range (4):
+    #         turtle.onkeypress(None, str(i + 1))
+    #     if choice == answer:
+    #         time.sleep(2)
+    #         pen.clear()
+    #         pen.write(f"Correct with your answer as {choice}. Game continue ", align="center", font=("Arial", 16, "normal"))
+    #         time.sleep(2)
+    #         pen.clear()
+    #         self.continue_game()
+    #     else:
+    #         time.sleep(2)
+    #         pen.clear()
+    #         pen.write(f"Wrong with your answer as {choice}. Game Over", align="center", font=("Arial", 16, "normal"))
+    #         time.sleep(2)
+    #         pen.clear()
+    #         self.end_game()
     
     
-    def display_question(self, problem, wn):
-        pen = Text()
-        pen.write(problem['question'], align="center", font=("Arial", 16, "normal"))
+    # def display_question(self, problem, wn):
+    #     pen = Text()
+    #     pen.write(problem['question'], align="center", font=("Arial", 16, "normal"))
 
-        start_y = 30
-        for i, option in enumerate(problem["options"], 1):
-            pen.goto(0, start_y - 30*i)
-            pen.write(f"{i}. {option}", align="center", font=("Arial", 14, "normal"))
+    #     start_y = 30
+    #     for i, option in enumerate(problem["options"], 1):
+    #         pen.goto(0, start_y - 30*i)
+    #         pen.write(f"{i}. {option}", align="center", font=("Arial", 14, "normal"))
 
-        # Here, implement logic to capture user's choice and check the answer
-        for i in range(4):
-            turtle.onkeypress(lambda i=i: self.handle_choice(problem["options"][i], problem["answer"], pen), str(i + 1))
+    #     # Here, implement logic to capture user's choice and check the answer
+    #     for i in range(4):
+    #         turtle.onkeypress(lambda i=i: self.handle_choice(problem["options"][i], problem["answer"], pen), str(i + 1))
 
-        turtle.listen()  # Listen for key presses
-        turtle.mainloop()
+    #     turtle.listen()  # Listen for key presses
+    #     turtle.mainloop()
     
     
     
@@ -159,7 +160,7 @@ class Game:
         print("Game Continued")
         self.game_loop()
         
-     
+        
     def menu(self):
         self.mess.write("Press S to start the game", align="center", font=("Arial", 16, "normal"))
         bgm()
@@ -204,7 +205,7 @@ class Game:
 
                     if self.type_boss == False:
                         self.tboss = Boss()
-                        self.create_letter(10)
+                        self.create_letter(self.number_of_words)
                         pen.color('red')
                         
                         time.sleep(1)
@@ -245,7 +246,7 @@ class Game:
 
                 else:
 
-                     # Create a new enemy every 5 seconds
+                    # Create a new enemy every 5 seconds
                     if len(self.enemies) == 0 or self.wn.frames % 300 == 0:
                         self.create_enemy(self.number_of_enemies)
 
@@ -257,10 +258,10 @@ class Game:
                         self.boss_appeared = True
                         print(self.velocity)
 
-                    # Boss logic
+                    # Boss fight logic
                     if self.boss_appeared:
                         if len(self.boss.fire_bullets) == 0 or self.wn.frames % 400 == 0:
-                            self.boss.fire_player(self.player, 2)
+                            self.boss.fire_player(self.player, 3)
                         
                         for bullet in self.player.bullets:
                             if bullet.isvisible() and bullet.distance(self.boss) < 40:
@@ -341,7 +342,8 @@ class Game:
 
                         if self.player.is_attacked(enemy):
                             self.typefight = True
-                            self.factor += 2
+                            self.factor += 4
+                            self.number_of_words += 3
 
                         for bullet in self.player.bullets:
                             if bullet.isvisible() and bullet.distance(enemy) < 20:
