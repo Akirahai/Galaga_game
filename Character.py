@@ -131,12 +131,6 @@ class Bullet(turtle.Turtle):
         self.penup()
         self.hideturtle()
         
-class Fire(turtle.Turtle):
-    def __init__(self):
-        super().__init__()
-        self.shape("char/fire.gif")
-        self.penup()
-        self.hideturtle()
 
 class Explosion(turtle.Turtle):
     def __init__(self):
@@ -151,35 +145,6 @@ class Explosion1(turtle.Turtle):
         self.shape("char/explosion1.gif")
         self.penup()
         self.hideturtle()
-        
-        
-class Letter(turtle.Turtle):
-    speed = 2
-    def __init__(self, s):
-        super().__init__()
-        self.penup()
-        self.color("white")
-        self.hideturtle()
-        self.goto(random.randint(-290, 290), random.randint(100,300))
-
-        self.alive = True
-        
-        self.string = s
-        turtle.listen()
-        turtle.onkeypress(self.die, self.string)
-
-    def die(self):
-        self.alive = False
-        
-class Stupid(turtle.Turtle):
-    speed = 4
-    def __init__(self, shapedir):
-        super().__init__()
-        turtle.addshape(shapedir)
-        self.shape(shapedir)
-        self.penup()
-        self.goto(random.randint(-290, 290), 280)
-        
 class Enemy(turtle.Turtle):
     
     speed = 1
@@ -189,18 +154,12 @@ class Enemy(turtle.Turtle):
         self.penup()
         self.goto(random.randint(-290, 290), 280)
         self.explosion = Explosion()
-    
-    
-    def increase_max(self, factor):
-        self.speed += factor
         
     def disappear(self):
         self.hideturtle()
         self.explosion.goto(self.xcor(), self.ycor())
         self.explosion.showturtle()
         turtle.ontimer(lambda: self.explosion.hideturtle(), 500)
-        
-        
         
 class Boss(turtle.Turtle):
     def __init__(self):
@@ -242,3 +201,51 @@ class Boss(turtle.Turtle):
             self.reduce_hp()
             return True
         return False
+
+class Fire(turtle.Turtle):
+    def __init__(self):
+        super().__init__()
+        self.shape("char/fire.gif")
+        self.penup()
+        self.hideturtle()
+
+
+class Letter(turtle.Turtle):
+    speed = 2
+    def __init__(self, s):
+        super().__init__()
+        self.penup()
+        self.color("white")
+        self.hideturtle()
+        self.goto(random.randint(-290, 290), random.randint(100,300))
+
+        self.alive = True
+        
+        self.string = s
+        turtle.listen()
+        turtle.onkeypress(self.die, self.string)
+
+    def die(self):
+        self.alive = False
+        
+class Stupid(turtle.Turtle):
+    speed = 4
+    def __init__(self, shapedir):
+        super().__init__()
+        turtle.addshape(shapedir)
+        self.shape(shapedir)
+        self.penup()
+        self.goto(random.randint(-290, 290), 280)
+        
+        
+class Text(turtle.Turtle):
+    
+    def __init__(self):
+        super().__init__()
+        self.penup()
+        self.hideturtle()
+        self.color("white")
+        self.goto(0, 50)
+
+def bgm():
+    winsound.PlaySound("sound/bgm.wav", winsound.SND_ASYNC)

@@ -27,5 +27,3 @@ def generate_calculus_problem():
 def exploding_sound():
     winsound.PlaySound("sound/explode.wav", winsound.SND_ASYNC)
 
-def bgm():
-    winsound.PlaySound("sound/bgm.wav", winsound.SND_ASYNC)

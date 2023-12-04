@@ -5,8 +5,7 @@ import json
 import string
 
 from Character import *
-from Question import Text, generate_calculus_problem, exploding_sound, bgm
-
+from Question import Text
 pen = turtle.Turtle()
 pen.hideturtle()
 
