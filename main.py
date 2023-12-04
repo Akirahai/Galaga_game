@@ -11,7 +11,6 @@ pen = turtle.Turtle()
 pen.hideturtle()
 
 class Game:
-    global A
     
     def __init__(self):
         A = True
@@ -35,7 +34,6 @@ class Game:
         self.score_display.goto(-290, 260)
         self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
         
-        self.velocity = 1
         self.number_of_enemies = 5
         
 
@@ -45,12 +43,13 @@ class Game:
         
         self.boss_appeared = False
         self.type_boss = False
-        self.typefight = False
+        self.type_fight = False
 
         self.game_running = False
-
-        self.factor = 1
+        
         self.number_of_words = 10
+        
+        self.boss_attack_speed = 5
     
         
     def create_enemy(self, n):
@@ -119,7 +118,7 @@ class Game:
     #     self.enemies = []
     #     self.player.bullets = []
         
-    #     self.velocity = 1
+    #     Enemy.speed = 1
     #     self.number_of_enemies = 5
         
     #     self.score = 0
@@ -134,8 +133,8 @@ class Game:
         self.player.showturtle()
         self.player.reward_bullet(3)
         
-        self.velocity = 1
-        
+        Enemy.speed = 1
+        self.number_of_enemies = 5
 
         if self.boss_appeared:
             self.boss.hideturtle()
@@ -156,7 +155,6 @@ class Game:
         self.enemies = []
         self.player.bullets = []
         
-        self.number_of_enemies = 5
         print("Game Continued")
         self.game_loop()
         
@@ -189,19 +187,17 @@ class Game:
 
                 # Move bullets
                 for bullet in self.player.bullets:
-                    if bullet.isvisible():
-                        y = bullet.ycor()
-                        y += 20  # bullet speed
-                        bullet.sety(y)
+                    y = bullet.ycor()
+                    y += 20  # bullet speed
+                    bullet.sety(y)
 
-                    if bullet.ycor() > 290:
-                        if bullet in self.player.bullets:
+                    if bullet.ycor() > 290 and bullet in self.player.bullets:
                             bullet.hideturtle()
                             bullet.clear()
                             self.player.bullets.remove(bullet)
 
 
-                if self.typefight:
+                if self.type_fight:
 
                     if self.type_boss == False:
                         self.tboss = Boss()
@@ -215,27 +211,38 @@ class Game:
                     self.type_boss = True
                     for enemy in self.enemies:
                         enemy.hideturtle()
-                    self.enemies.clear()
+                        enemy.clear()
+                        if enemy in self.enemies:
+                            self.enemies.remove(enemy)
+                    
+                    if self.boss_appeared:
+                        for fire in self.boss.fire_bullets:
+                            fire.hideturtle()
+                            fire.clear()
+                            if fire in self.boss.fire_bullets:
+                                self.boss.fire_bullets.remove(fire)
 
                     if len(self.letters) == 0:
                         self.tboss.hideturtle()
                         self.letters.clear()
                         self.player.reward_bullet(3)
+                        Letter.speed += 1
+                        self.number_of_words += 1
                         pen.clear()
+                        self.type_fight = False
                         self.type_boss = False
-                        self.typefight = False
 
                     for letter in self.letters:
-                        letter.increase_max(self.factor)
                         if letter.alive:
                             letter.clear()
                             y = letter.ycor()
-                            y -= letter.speed
+                            y -= Letter.speed
                             letter.sety(y)
                             letter.write(letter.string, align='center', 
                                         font=('Arial', 20, 'bold'))
                             
                             if y < -300:
+                                pen.clear()
                                 pen.color("red")
                                 pen.write("GAME OVER", align='center', font=('Impact', 30, 'normal'))
                                 time.sleep(2)
@@ -253,15 +260,15 @@ class Game:
                     
                     if self.score > 0 and self.score % 100 == 0 and not self.boss_appeared:
                         self.boss = Boss()
-                        self.velocity += 2
+                        Enemy.speed += 2
                         self.number_of_enemies+= 3
                         self.boss_appeared = True
-                        print(self.velocity)
+                        print(Enemy.speed)
 
                     # Boss fight logic
                     if self.boss_appeared:
-                        if len(self.boss.fire_bullets) == 0 or self.wn.frames % 400 == 0:
-                            self.boss.fire_player(self.player, 3)
+                        if len(self.boss.fire_bullets) == 0 or self.wn.frames % 200 == 0:
+                            self.boss.fire_player(self.player, 4)
                         
                         for bullet in self.player.bullets:
                             if bullet.isvisible() and bullet.distance(self.boss) < 40:
@@ -273,39 +280,29 @@ class Game:
                                 self.boss_appeared = not self.boss.die()
                                 
                         for fire in self.boss.fire_bullets:
-                            if fire.isvisible():
-                                y = fire.ycor()
-                                y -= 5  # Adjust enemy speed
-                                fire.sety(y)
+                            y = fire.ycor()
+                            y -= self.boss_attack_speed  # Adjust enemy speed
+                            fire.sety(y)
+                            
+                            if self.player.is_attacked(fire):
+                                self.type_fight = True
                             if fire.ycor() < -300:
                                 fire.hideturtle()
-                                fire.clear()
                                 if fire in self.boss.fire_bullets:
                                     self.boss.fire_bullets.remove(fire)
-                            if fire.distance(self.player) < 20:
-                                fire.hideturtle()
-                                fire.clear()
-                                if fire in self.boss.fire_bullets:
-                                    self.boss.fire_bullets.remove(fire)
-                                
-                                self.typefight = True
+
                                 
                         if self.boss.die():
                             # self.boss.hideturtle()
                             # self.boss.clear()
                             self.score += 50
+                            self.boss_attack_speed += 2
                             self.score_display.clear()
                             self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
                             self.player.reward_bullet(10)
                             for fire in self.boss.fire_bullets:
                                 fire.hideturtle()
                                 fire.clear()
-                            # time.sleep(1)
-                            # pen = Text()
-                            # pen.write("Game Over - Answer this question", align="center", font=("Arial", 16, "normal"))
-                            # time.sleep(1)
-                            # pen.clear()
-                            # self.display_question(generate_calculus_problem(), self.wn)
 
                     
                     # Move stupid
@@ -316,7 +313,7 @@ class Game:
 
                     for stupid in self.stupids:
                         y = stupid.ycor()
-                        y -= self.velocity
+                        y -= Stupid.speed
                         x = stupid.xcor()
                         x += random.randint(1,2)
                         if x > 290:
@@ -332,7 +329,7 @@ class Game:
                     # Move enemies
                     for enemy in self.enemies:
                         y = enemy.ycor()
-                        y -= self.velocity  # Adjust enemy speed
+                        y -= Enemy.speed
                         x = enemy.xcor()
                         x += random.randint(1,2)
                         if x > 290:
@@ -341,9 +338,12 @@ class Game:
                         enemy.sety(y)
 
                         if self.player.is_attacked(enemy):
-                            self.typefight = True
-                            self.factor += 4
-                            self.number_of_words += 3
+                            self.type_fight = True
+                            
+                        if y < -300:
+                            enemy.hideturtle()
+                            if enemy in self.enemies:
+                                self.enemies.remove(enemy)   
 
                         for bullet in self.player.bullets:
                             if bullet.isvisible() and bullet.distance(enemy) < 20:
@@ -364,11 +364,7 @@ class Game:
                             if bullet.ycor() > 300:
                                 if bullet in self.player.bullets:
                                     self.player.bullets.remove(bullet)
-                        if y < -300:
-                            enemy.hideturtle()
-                            if enemy in self.enemies:
-                                self.enemies.remove(enemy)            
-               
+
 
                 # if self.wn.frames % 100 == 0:
                 #     boss.fire_enemy(self.player)
@@ -381,8 +377,9 @@ class Game:
             pass
 
     def end_game(self):
+        
         self.mess.write("Game Over. Press r to restart game", align="center", font=("Arial", 16, "normal"))
-        turtle.onkeypress(self.restart_game(), "r")
+        # turtle.onkeypress(self.restart_game(), "r")
 
 # Rest of the code remains the same
 
@@ -398,10 +395,15 @@ A = False
 #         game.menu()
 #         turtle.mainloop()
     
-   
-game = Game()
-game.menu()
-turtle.mainloop()
+    
+while True:
+    if A == False:
+        game = Game()
+        game.menu()
+        turtle.mainloop()
+    else:
+        break
+
 # game = Game()
 
 # game.menu()

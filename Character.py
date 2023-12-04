@@ -154,13 +154,12 @@ class Explosion1(turtle.Turtle):
         
         
 class Letter(turtle.Turtle):
+    speed = 2
     def __init__(self, s):
         super().__init__()
         self.penup()
         self.color("white")
         self.hideturtle()
-        self.max = 1
-        self.speed = self.max
         self.goto(random.randint(-290, 290), random.randint(100,300))
 
         self.alive = True
@@ -171,28 +170,30 @@ class Letter(turtle.Turtle):
 
     def die(self):
         self.alive = False
-    
-    def increase_max(self, factor):
-        self.max += factor
         
 class Stupid(turtle.Turtle):
+    speed = 4
     def __init__(self, shapedir):
         super().__init__()
         turtle.addshape(shapedir)
         self.shape(shapedir)
         self.penup()
-        self.speed = 4
         self.goto(random.randint(-290, 290), 280)
         
 class Enemy(turtle.Turtle):
+    
+    speed = 1
     def __init__(self):
         super().__init__()
         self.shape("char/minion.gif")
         self.penup()
-        self.speed = 0.25
         self.goto(random.randint(-290, 290), 280)
         self.explosion = Explosion()
     
+    
+    def increase_max(self, factor):
+        self.speed += factor
+        
     def disappear(self):
         self.hideturtle()
         self.explosion.goto(self.xcor(), self.ycor())
