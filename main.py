@@ -31,6 +31,7 @@ class Game:
         self.score_display.penup()
         self.score_display.hideturtle()
         self.score_display.goto(-290, 260)
+        self.score_display.clear()
         self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
         
         self.number_of_enemies = 5
@@ -99,10 +100,6 @@ class Game:
     def restart_game(self):
         self.player.clear()
         self.tboss.clear()
-        self.score_display.clear()
-        for letter in self.letters:
-            letter.hideturtle()
-            letter.clear()
         self.wn.clear()
         self.__init__()
         self.menu()
@@ -225,11 +222,15 @@ class Game:
                             if y < -300:
                                 pen.clear()
                                 pen.color("red")
+                                for l in self.letters:
+                                    l.hideturtle()
+                                    l.clear()
+                                if l in self.letters:
+                                    self.letters.remove(l)
                                 pen.write(f"GAME OVER. You got {self.score}. Amazing, good job", align='center', font=('Impact', 14, 'normal'))
                                 time.sleep(2)
-                                letter.hideturtle()
-                                letter.clear()
                                 self.restart_game()
+                                break
                         else:
                             letter.clear()
                             self.letters.remove(letter)
