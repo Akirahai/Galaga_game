@@ -11,9 +11,8 @@ pen = turtle.Turtle()
 pen.hideturtle()
 
 class Game:
-    
+    A = True
     def __init__(self):
-        A = True
         self.wn = turtle.Screen()
         # self.wn.title("Galaga")
         self.wn.bgcolor("black")
@@ -97,35 +96,16 @@ class Game:
     
     
     
-    # def restart_game(self):
-    #     self.mess.clear()
-        
-    #     turtle.onkeypress(None, "r")
-        
-    #     self.player.hideturtle()
-    #     self.player.clear()
-        
-    #     self.player = Player()
-        
-    #     if self.boss_appeared:
-    #         self.boss.hideturtle()
-    #         self.boss.clear()
-    #         self.boss_appeared = False
-            
-    #     self.enemies.clear()
-    #     self.player.bullets.clear()
-        
-    #     self.enemies = []
-    #     self.player.bullets = []
-        
-    #     Enemy.speed = 1
-    #     self.number_of_enemies = 5
-        
-    #     self.score = 0
-    #     self.score_display.clear()
-    #     self.score_display.write(f"Score: {self.score}", align="left", font=("Arial", 14, "normal"))
-        
-    #     self.game_loop()
+    def restart_game(self):
+        self.player.clear()
+        self.tboss.clear()
+        self.score_display.clear()
+        for letter in self.letters:
+            letter.hideturtle()
+            letter.clear()
+        self.wn.clear()
+        self.__init__()
+        self.menu()
     
             
     def continue_game(self):
@@ -160,6 +140,7 @@ class Game:
         
         
     def menu(self):
+        Game.A = False
         self.mess.write("Press S to start the game", align="center", font=("Arial", 16, "normal"))
         bgm()
         turtle.onkeypress(self.start_game, "s")
@@ -244,9 +225,11 @@ class Game:
                             if y < -300:
                                 pen.clear()
                                 pen.color("red")
-                                pen.write("GAME OVER", align='center', font=('Impact', 30, 'normal'))
+                                pen.write(f"GAME OVER. You got {self.score}. Amazing, good job", align='center', font=('Impact', 14, 'normal'))
                                 time.sleep(2)
-                                self.end_game()
+                                letter.hideturtle()
+                                letter.clear()
+                                self.restart_game()
                         else:
                             letter.clear()
                             self.letters.remove(letter)
@@ -376,39 +359,11 @@ class Game:
         except turtle.Terminator:
             pass
 
-    def end_game(self):
-        
-        self.mess.write("Game Over. Press r to restart game", align="center", font=("Arial", 16, "normal"))
-        # turtle.onkeypress(self.restart_game(), "r")
-
-# Rest of the code remains the same
-
-# Usage
 
 
-A = False
+game = Game()
+game.menu()
+turtle.mainloop()
 
-# game = 0
-# while True:
-#     if A == False:
-#         game = Game()
-#         game.menu()
-#         turtle.mainloop()
-    
-    
-while True:
-    if A == False:
-        game = Game()
-        game.menu()
-        turtle.mainloop()
-    else:
-        break
-
-# game = Game()
-
-# game.menu()
-
-# # Listen for the keypress to start the game
-# turtle.listen()
 
 
