@@ -18,6 +18,8 @@ turtle.addshape('char/fire.gif')
 turtle.addshape('char/explosion.gif')
 
 turtle.addshape('char/explosion1.gif')
+
+turtle.addshape('char/literallyme.gif')
 class Player(turtle.Turtle):
     def __init__(self):
         super().__init__()

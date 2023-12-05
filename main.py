@@ -1,16 +1,12 @@
 import turtle
 import time
 import random
-import json
 import string
 
 from Character import *
-from Question import Text
-pen = turtle.Turtle()
-pen.hideturtle()
 
+pen = Text()
 class Game:
-    A = True
     def __init__(self):
         self.wn = turtle.Screen()
         # self.wn.title("Galaga")
@@ -56,42 +52,6 @@ class Game:
             enemy = Enemy()
             self.enemies.append(enemy)
         
-        
-        
-    # def handle_choice(self, choice, answer, pen):
-    #     for i in range (4):
-    #         turtle.onkeypress(None, str(i + 1))
-    #     if choice == answer:
-    #         time.sleep(2)
-    #         pen.clear()
-    #         pen.write(f"Correct with your answer as {choice}. Game continue ", align="center", font=("Arial", 16, "normal"))
-    #         time.sleep(2)
-    #         pen.clear()
-    #         self.continue_game()
-    #     else:
-    #         time.sleep(2)
-    #         pen.clear()
-    #         pen.write(f"Wrong with your answer as {choice}. Game Over", align="center", font=("Arial", 16, "normal"))
-    #         time.sleep(2)
-    #         pen.clear()
-    #         self.end_game()
-    
-    
-    # def display_question(self, problem, wn):
-    #     pen = Text()
-    #     pen.write(problem['question'], align="center", font=("Arial", 16, "normal"))
-
-    #     start_y = 30
-    #     for i, option in enumerate(problem["options"], 1):
-    #         pen.goto(0, start_y - 30*i)
-    #         pen.write(f"{i}. {option}", align="center", font=("Arial", 14, "normal"))
-
-    #     # Here, implement logic to capture user's choice and check the answer
-    #     for i in range(4):
-    #         turtle.onkeypress(lambda i=i: self.handle_choice(problem["options"][i], problem["answer"], pen), str(i + 1))
-
-    #     turtle.listen()  # Listen for key presses
-    #     turtle.mainloop()
     
     
     
@@ -291,7 +251,7 @@ class Game:
                     # Move stupid
 
                     if self.wn.frames % 100 == 0:
-                        s = Stupid('literallyme.gif')
+                        s = Stupid('char/literallyme.gif')
                         self.stupids.append(s)
 
                     for stupid in self.stupids:
@@ -348,13 +308,12 @@ class Game:
                                 if bullet in self.player.bullets:
                                     self.player.bullets.remove(bullet)
 
-
-                # if self.wn.frames % 100 == 0:
-                #     boss.fire_enemy(self.player)
-                    
-                if self.player.isvisible():
+                
+                if self.player.isvisible():  ## Check if the player character is visible on the screen
+                    # Schedule the game_loop method to be called again after 10 milliseconds
                     self.wn.ontimer(self.game_loop, 10)
-                    self.wn.frames += 1
+                    # Increment the frames attribute to keep track of the number of iterations
+                    self.wn.frames += 1    
 
         except turtle.Terminator:
             pass
